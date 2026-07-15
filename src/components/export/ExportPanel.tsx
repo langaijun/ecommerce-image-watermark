@@ -9,6 +9,7 @@ import { platformRegistry } from '@/lib/platforms/platformRegistry';
 import { runBatchProcess } from '@/lib/processing/batchProcessor';
 import { formatFileSize } from '@/lib/utils/fileUtils';
 import { COMMON_SIZES } from '@/lib/constants/export';
+import { previewFilename, TEMPLATE_VARIABLES } from '@/lib/utils/filenameTemplate';
 import type { SizeSpec } from '@/lib/types';
 import {
   Download,
@@ -32,6 +33,8 @@ export function ExportPanel() {
     setFormat,
     quality,
     setQuality,
+    filenameTemplate,
+    setFilenameTemplate,
   } = useExportStore();
   const { status, progress, result, start, updateProgress, complete, fail, cancel, reset } =
     useProcessStore();
@@ -69,6 +72,7 @@ export function ExportPanel() {
         quality,
         selectedSizes: sizesToUse,
         platformId: selectedPlatformId ?? undefined,
+        filenameTemplate,
         concurrency: 3,
         onProgress: (current, total, name) => {
           updateProgress(current, total, name);
@@ -212,6 +216,51 @@ export function ExportPanel() {
           onChange={(e) => setQuality(Number(e.target.value) / 100)}
           className="w-full"
         />
+      </div>
+
+      {/* Filename template */}
+      <div>
+        <label className="text-xs text-muted-foreground mb-1.5 block font-medium">
+          📁 {t('filenameTemplate')}
+        </label>
+        <input
+          type="text"
+          value={filenameTemplate}
+          onChange={(e) => setFilenameTemplate(e.target.value)}
+          className="w-full rounded-lg border bg-background px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+          placeholder="{name}_{platform}_{width}x{height}"
+        />
+        {/* Live preview */}
+        <div className="mt-1.5 px-2 py-1 rounded-md bg-muted/40 text-[10px] font-mono text-muted-foreground truncate">
+          → {previewFilename(
+            filenameTemplate,
+            images[0]?.name?.replace(/\.[^.]+$/, '') || 'product',
+            selectedPlatformId || '',
+            1000,
+            1000,
+            format === 'image/jpeg' ? 'jpg' : format === 'image/png' ? 'png' : 'webp'
+          )}
+        </div>
+        {/* Quick variable buttons */}
+        <div className="flex flex-wrap gap-1 mt-1.5">
+          {TEMPLATE_VARIABLES.slice(0, 6).map((v) => (
+            <button
+              key={v.key}
+              onClick={() => {
+                const input = document.querySelector<HTMLInputElement>('[placeholder="{name}_{platform}_{width}x{height}"]');
+                if (input) {
+                  const start = input.selectionStart ?? filenameTemplate.length;
+                  const newTemplate = filenameTemplate.slice(0, start) + v.key + filenameTemplate.slice(start);
+                  setFilenameTemplate(newTemplate);
+                }
+              }}
+              className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-muted border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
+              title={v.desc}
+            >
+              {v.key}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Process button */}

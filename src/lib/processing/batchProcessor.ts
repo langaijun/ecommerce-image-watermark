@@ -9,6 +9,7 @@ export interface BatchProcessOptions {
   quality: number;
   selectedSizes: SizeSpec[];
   platformId?: string;
+  filenameTemplate?: string;
   concurrency?: number;
   onProgress?: (current: number, total: number, name: string) => void;
   signal?: AbortSignal;
@@ -28,13 +29,15 @@ export async function runBatchProcess(
     quality,
     selectedSizes,
     platformId,
+    filenameTemplate,
     concurrency = 3,
     signal,
   } = options;
 
-  // Expand tasks: each image × each size
+  // Expand tasks: each image × each size, with sequential index
+  let seqIndex = 0;
   const tasks = images.flatMap((image) =>
-    selectedSizes.map((size) => ({ image, sizeSpec: size }))
+    selectedSizes.map((size) => ({ image, sizeSpec: size, seqIndex: ++seqIndex }))
   );
 
   const totalTasks = tasks.length;
@@ -57,7 +60,7 @@ export async function runBatchProcess(
     if (taskIndex >= totalTasks) return;
 
     const task = tasks[taskIndex++];
-    const { image, sizeSpec } = task;
+    const { image, sizeSpec, seqIndex: fileIndex } = task;
 
     try {
       const result = await processImage(
@@ -66,7 +69,9 @@ export async function runBatchProcess(
         format,
         quality,
         sizeSpec,
-        platformId
+        platformId,
+        filenameTemplate,
+        fileIndex
       );
 
       // Write to ZIP

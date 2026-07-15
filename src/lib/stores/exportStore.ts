@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { DEFAULT_TEMPLATE } from '@/lib/utils/filenameTemplate';
 
 interface ExportState {
   selectedPlatformId: string | null;
@@ -18,6 +19,9 @@ interface ExportState {
   quality: number;
   setFormat: (format: 'image/jpeg' | 'image/png' | 'image/webp') => void;
   setQuality: (quality: number) => void;
+
+  filenameTemplate: string;
+  setFilenameTemplate: (template: string) => void;
 
   concurrency: number;
   setConcurrency: (n: number) => void;
@@ -55,6 +59,9 @@ export const useExportStore = create<ExportState>()(
       setFormat: (format) => set({ format }),
       setQuality: (quality) => set({ quality }),
 
+      filenameTemplate: DEFAULT_TEMPLATE,
+      setFilenameTemplate: (template) => set({ filenameTemplate: template || DEFAULT_TEMPLATE }),
+
       concurrency: 3,
       setConcurrency: (n) => set({ concurrency: Math.max(1, Math.min(8, n)) }),
 
@@ -65,6 +72,7 @@ export const useExportStore = create<ExportState>()(
           customSize: { enabled: false, width: 800, height: 800 },
           format: 'image/jpeg',
           quality: 0.92,
+          filenameTemplate: DEFAULT_TEMPLATE,
           concurrency: 3,
         }),
     }),

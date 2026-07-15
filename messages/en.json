@@ -89,6 +89,7 @@
     "height": "Height",
     "format": "Format",
     "quality": "Quality",
+    "filenameTemplate": "Export Filename Template",
     "process": "Start Processing",
     "processing": "Processing...",
     "cancel": "Cancel",

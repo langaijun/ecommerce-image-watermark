@@ -133,7 +133,9 @@ export async function processImage(
   format: string,
   quality: number,
   sizeSpec: SizeSpec,
-  platformId?: string
+  platformId?: string,
+  filenameTemplate?: string,
+  fileIndex?: number
 ): Promise<ProcessedImage> {
   // 1. Get original dimensions
   const imgUrl = URL.createObjectURL(file);
@@ -268,14 +270,28 @@ export async function processImage(
     );
   });
 
-  // 7. Generate filename
+  // 7. Generate filename using template
   const baseName = getBaseName(file.name);
   const ext =
     format === 'image/jpeg' ? 'jpg' : format === 'image/png' ? 'png' : 'webp';
-  const sizeLabel =
-    sizeSpec.width > 0 ? `_${sizeSpec.width}x${sizeSpec.height}` : '';
-  const platformLabel = platformId ? `_${platformId}` : '';
-  const fileName = `${baseName}${platformLabel}${sizeLabel}.${ext}`;
+
+  let fileName: string;
+  if (filenameTemplate) {
+    const { renderFilename } = await import('@/lib/utils/filenameTemplate');
+    fileName = renderFilename(filenameTemplate, {
+      name: baseName,
+      ext,
+      platform: platformId || '',
+      width: outputW,
+      height: outputH,
+      index: fileIndex ?? 1,
+    });
+  } else {
+    // Fallback to legacy naming
+    const sizeLabel = sizeSpec.width > 0 ? `_${sizeSpec.width}x${sizeSpec.height}` : '';
+    const platformLabel = platformId ? `_${platformId}` : '';
+    fileName = `${baseName}${platformLabel}${sizeLabel}.${ext}`;
+  }
 
   // 8. Cleanup
   offscreenCanvas.dispose();

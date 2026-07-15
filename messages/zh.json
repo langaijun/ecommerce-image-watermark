@@ -89,6 +89,7 @@
     "height": "高度",
     "format": "输出格式",
     "quality": "图片质量",
+    "filenameTemplate": "导出文件名模板",
     "process": "开始处理",
     "processing": "处理中...",
     "cancel": "取消",
