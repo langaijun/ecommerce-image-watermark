@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from '@/lib/i18n/routing';
 import { ImageUpload } from '@/components/upload/ImageUpload';
@@ -7,9 +8,8 @@ import { WatermarkControls } from '@/components/controls/WatermarkControls';
 import { ExportPanel } from '@/components/export/ExportPanel';
 import { PrivacyBanner } from '@/components/common/PrivacyBanner';
 import { TemplateManager } from '@/components/templates/TemplateManager';
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, Eye, Settings, Download } from 'lucide-react';
 
-// Dynamic import for Fabric.js canvas (client-side only)
 const WatermarkCanvas = dynamic(
   () =>
     import('@/components/editor/WatermarkCanvas').then(
@@ -27,59 +27,114 @@ const WatermarkCanvas = dynamic(
   }
 );
 
+type MobileTab = 'upload' | 'preview' | 'controls' | 'export';
+
+const TAB_CONFIG: { key: MobileTab; icon: typeof ImageIcon }[] = [
+  { key: 'upload', icon: ImageIcon },
+  { key: 'preview', icon: Eye },
+  { key: 'controls', icon: Settings },
+  { key: 'export', icon: Download },
+];
+
 export default function HomePage() {
-  const tu = useTranslations('upload');
+  const [activeTab, setActiveTab] = useState<MobileTab>('upload');
+  const tUpload = useTranslations('upload');
+  const tPreview = useTranslations('preview');
+  const tWatermark = useTranslations('watermark');
+  const tExport = useTranslations('export');
+
+  const tabLabels: Record<MobileTab, string> = {
+    upload: tUpload('title'),
+    preview: tPreview('title'),
+    controls: tWatermark('title'),
+    export: tExport('title'),
+  };
 
   return (
-    <div className="container mx-auto px-4 py-5">
+    <div className="container mx-auto px-4 py-4 lg:py-5">
       {/* Privacy banner */}
-      <div className="mb-5">
+      <div className="mb-4 lg:mb-5">
         <PrivacyBanner />
       </div>
 
-      {/* Main layout: 3 columns on desktop, stacked on mobile */}
-      <div className="flex flex-col lg:flex-row gap-5 h-[calc(100vh-11rem)]">
-        {/* Left panel: Upload + Gallery */}
-        <div className="lg:w-[26%] flex flex-col min-h-0 rounded-xl panel-glass p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10">
-              <ImageIcon className="h-3.5 w-3.5 text-primary" />
+      {/* Main layout */}
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 h-[calc(100vh-10rem)] lg:h-[calc(100vh-11rem)]">
+        {/* === DESKTOP: 3-column layout === */}
+        <div className="hidden lg:flex lg:flex-row gap-5 h-full w-full">
+          {/* Left: Upload */}
+          <div className="w-[26%] flex flex-col min-h-0 rounded-xl panel-glass p-4">
+            <PanelTitle icon={<ImageIcon className="h-3.5 w-3.5 text-primary" />} label="上传图片" />
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <ImageUpload />
             </div>
-            <h2 className="text-sm font-semibold text-foreground">
-              {tu('title')}
-            </h2>
           </div>
-          <div className="flex-1 min-h-0 overflow-hidden">
-            <ImageUpload />
+
+          {/* Center: Preview */}
+          <div className="flex-1 flex flex-col min-h-0 rounded-xl panel-glass p-4">
+            <WatermarkCanvas />
+          </div>
+
+          {/* Right: Controls + Templates + Export */}
+          <div className="w-[24%] flex flex-col min-h-0 gap-4">
+            <div className="flex-1 min-h-0 rounded-xl panel-glass p-4 overflow-hidden">
+              <WatermarkControls />
+            </div>
+            <div className="rounded-xl panel-glass p-4">
+              <TemplateManager />
+            </div>
+            <div className="max-h-[35%] min-h-0 rounded-xl panel-glass p-4 overflow-hidden">
+              <ExportPanel />
+            </div>
           </div>
         </div>
 
-        {/* Center panel: Canvas Preview */}
-        <div className="lg:w-1/2 flex flex-col min-h-0 rounded-xl panel-glass p-4">
-          <WatermarkCanvas />
-        </div>
-
-        {/* Right panel: Controls + Export */}
-        <div className="lg:w-[24%] flex flex-col min-h-0 gap-5">
-          {/* Watermark controls */}
+        {/* === MOBILE: Tab-based layout === */}
+        <div className="flex lg:hidden flex-col flex-1 min-h-0">
+          {/* Tab content */}
           <div className="flex-1 min-h-0 rounded-xl panel-glass p-4 overflow-hidden">
-            <WatermarkControls />
+            {activeTab === 'upload' && (
+              <div className="flex flex-col h-full">
+                <PanelTitle icon={<ImageIcon className="h-3.5 w-3.5 text-primary" />} label="上传图片" />
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  <ImageUpload />
+                </div>
+              </div>
+            )}
+            {activeTab === 'preview' && (
+              <WatermarkCanvas />
+            )}
+            {activeTab === 'controls' && (
+              <div className="flex flex-col h-full gap-3">
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                  <WatermarkControls />
+                </div>
+                <div className="border-t border-border/60 pt-3">
+                  <TemplateManager />
+                </div>
+              </div>
+            )}
+            {activeTab === 'export' && (
+              <ExportPanel />
+            )}
           </div>
 
-          {/* Template manager */}
-          <div className="rounded-xl panel-glass p-4">
-            <TemplateManager />
-          </div>
-
-          {/* Export settings */}
-          <div className="lg:max-h-[40%] min-h-0 rounded-xl panel-glass p-4 overflow-hidden">
-            <ExportPanel />
+          {/* Bottom tab bar */}
+          <div className="mt-3 flex gap-1 p-1 bg-muted/60 rounded-xl">
+            {TAB_CONFIG.map(({ key, icon: Icon }) => (
+              <MobileTabButton
+                key={key}
+                active={activeTab === key}
+                onClick={() => setActiveTab(key)}
+                icon={<Icon className="h-4 w-4" />}
+                label={tabLabels[key]}
+              />
+            ))}
           </div>
         </div>
       </div>
 
-      {/* FAQ Section - SEO */}
-      <section className="mt-10 mb-8 max-w-3xl mx-auto">
+      {/* FAQ Section - SEO (desktop only for cleaner mobile UX) */}
+      <section className="hidden lg:block mt-10 mb-8 max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center text-foreground">
           常见问题 - 电商产品图批量水印工具 FAQ
         </h2>
@@ -130,7 +185,7 @@ export default function HomePage() {
               <span className="ml-2 transition-transform group-open:rotate-180 text-muted-foreground select-none">▾</span>
             </summary>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              可以。您可以一次上传多张图片，设置好水印参数后，一键批量应用到所有图片。支持文字水印、图片水印（Logo）和平铺水印三种类型。导出时支持 ZIP 打包下载，大幅提升工作效率。
+              可以。您可以一次上传多张图片，设置好水印参数后，一键批量应用到所有图片。支持文字水印、图片水印（Logo）、平铺水印和组合水印四种类型。导出时支持 ZIP 打包下载，大幅提升工作效率。
             </p>
           </details>
 
@@ -146,5 +201,42 @@ export default function HomePage() {
         </div>
       </section>
     </div>
+  );
+}
+
+function PanelTitle({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10">
+        {icon}
+      </div>
+      <h2 className="text-sm font-semibold text-foreground">{label}</h2>
+    </div>
+  );
+}
+
+function MobileTabButton({
+  active,
+  onClick,
+  icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-lg text-[10px] font-medium transition-all duration-200 ${
+        active
+          ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+          : 'text-muted-foreground hover:text-foreground'
+      }`}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
   );
 }
