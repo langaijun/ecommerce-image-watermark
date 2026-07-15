@@ -6,6 +6,7 @@ import { ImageUpload } from '@/components/upload/ImageUpload';
 import { WatermarkControls } from '@/components/controls/WatermarkControls';
 import { ExportPanel } from '@/components/export/ExportPanel';
 import { PrivacyBanner } from '@/components/common/PrivacyBanner';
+import { TemplateManager } from '@/components/templates/TemplateManager';
 import { ImageIcon } from 'lucide-react';
 
 // Dynamic import for Fabric.js canvas (client-side only)
@@ -63,6 +64,11 @@ export default function HomePage() {
           {/* Watermark controls */}
           <div className="flex-1 min-h-0 rounded-xl panel-glass p-4 overflow-hidden">
             <WatermarkControls />
+          </div>
+
+          {/* Template manager */}
+          <div className="rounded-xl panel-glass p-4">
+            <TemplateManager />
           </div>
 
           {/* Export settings */}
