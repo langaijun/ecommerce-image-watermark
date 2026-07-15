@@ -29,7 +29,11 @@ export const useExportStore = create<ExportState>()(
   persist(
     (set) => ({
       selectedPlatformId: null,
-      setSelectedPlatform: (id) => set({ selectedPlatformId: id }),
+      setSelectedPlatform: (id) =>
+        set({
+          selectedPlatformId: id,
+          selectedSizeIds: id ? [] : ['original'],
+        }),
 
       selectedSizeIds: ['original'],
       toggleSize: (sizeId) =>
