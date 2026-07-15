@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, useMemo } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import zhMessages from '../../../messages/zh.json';
 import enMessages from '../../../messages/en.json';
 
