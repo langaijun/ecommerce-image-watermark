@@ -54,17 +54,35 @@ export const DEFAULT_WATERMARK_CONFIG: WatermarkConfig = {
   transform: DEFAULT_TRANSFORM,
 };
 
-export const FONT_FAMILIES = [
-  'Arial',
-  'Helvetica',
-  'Times New Roman',
-  'Georgia',
-  'Verdana',
-  'Courier New',
-  'Impact',
-  'Comic Sans MS',
-  'Trebuchet MS',
+export const FONT_GROUPS = [
+  {
+    label: '英文字体',
+    labelEn: 'English Fonts',
+    fonts: [
+      'Arial',
+      'Helvetica',
+      'Times New Roman',
+      'Georgia',
+      'Verdana',
+      'Courier New',
+      'Impact',
+      'Trebuchet MS',
+    ],
+  },
+  {
+    label: '中文字体',
+    labelEn: 'Chinese Fonts',
+    fonts: [
+      'Microsoft YaHei',
+      'SimHei',
+      'SimSun',
+      'KaiTi',
+      'FangSong',
+    ],
+  },
 ];
+
+export const FONT_FAMILIES = FONT_GROUPS.flatMap((g) => g.fonts);
 
 export const WATERMARK_LIMITS = {
   fontSize: { min: 8, max: 200 },

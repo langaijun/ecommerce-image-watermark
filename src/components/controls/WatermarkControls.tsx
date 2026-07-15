@@ -2,7 +2,7 @@
 
 import { useTranslations } from '@/lib/i18n/routing';
 import { useWatermarkStore } from '@/lib/stores/watermarkStore';
-import { FONT_FAMILIES, WATERMARK_LIMITS } from '@/lib/constants/watermark';
+import { FONT_GROUPS, WATERMARK_LIMITS } from '@/lib/constants/watermark';
 import { Type, Image, Grid3x3, MapPin, RotateCcw, Sun } from 'lucide-react';
 
 export function WatermarkControls() {
@@ -86,10 +86,14 @@ export function WatermarkControls() {
                 onChange={(e) => updateText({ fontFamily: e.target.value })}
                 className="w-full rounded-lg border bg-background px-2 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               >
-                {FONT_FAMILIES.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
+                {FONT_GROUPS.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.fonts.map((f) => (
+                      <option key={f} value={f}>
+                        {f}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>
