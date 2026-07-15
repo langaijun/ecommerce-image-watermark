@@ -3,11 +3,11 @@
 import { useTranslations } from '@/lib/i18n/routing';
 import { useWatermarkStore } from '@/lib/stores/watermarkStore';
 import { FONT_GROUPS, WATERMARK_LIMITS } from '@/lib/constants/watermark';
-import { Type, Image, Grid3x3, MapPin, RotateCcw, Sun, Layers } from 'lucide-react';
+import { useEffect } from 'react';
+import { Type, Image, Grid3x3, MapPin, RotateCcw, Sun, Layers, Undo2, Redo2 } from 'lucide-react';
 
 export function WatermarkControls() {
   const t = useTranslations('watermark');
-  const tc = useTranslations('common');
   const {
     type,
     setType,
@@ -22,7 +22,27 @@ export function WatermarkControls() {
     transform,
     updateTransform,
     resetAll,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useWatermarkStore();
+
+  // Keyboard shortcuts: Ctrl+Z undo, Ctrl+Shift+Z redo
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [undo, redo]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -574,14 +594,31 @@ export function WatermarkControls() {
         )}
       </div>
 
-      {/* Reset */}
-      <button
-        onClick={resetAll}
-        className="w-full text-xs text-muted-foreground hover:text-destructive py-2.5 border border-border/60 rounded-lg transition-all duration-200 hover:border-destructive/30 hover:bg-destructive/5 flex items-center justify-center gap-1.5"
-      >
-        <RotateCcw className="h-3 w-3" />
-        {tc('reset')}
-      </button>
+      {/* Undo/Redo + Reset */}
+      <div className="flex gap-2">
+        <button
+          onClick={undo}
+          disabled={!canUndo}
+          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg border border-border/60 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+          title="Ctrl+Z"
+        >
+          <Undo2 className="h-3.5 w-3.5" />
+        </button>
+        <button
+          onClick={redo}
+          disabled={!canRedo}
+          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg border border-border/60 text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+          title="Ctrl+Shift+Z"
+        >
+          <Redo2 className="h-3.5 w-3.5" />
+        </button>
+        <button
+          onClick={resetAll}
+          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg border border-border/60 text-xs text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/5 transition-all duration-200"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+        </button>
+      </div>
     </div>
   );
 }
