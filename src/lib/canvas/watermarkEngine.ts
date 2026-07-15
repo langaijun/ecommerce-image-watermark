@@ -124,6 +124,32 @@ export class WatermarkEngine {
     return obj;
   }
 
+  /**
+   * Enable or disable dragging on watermark objects.
+   */
+  setDraggable(draggable: boolean): void {
+    for (const obj of this.watermarkObjects) {
+      obj.set({ selectable: draggable, evented: draggable });
+    }
+    if (this.canvas) {
+      this.canvas.selection = false;
+      this.canvas.defaultCursor = draggable ? 'move' : 'default';
+    }
+  }
+
+  /**
+   * Register a callback for when a watermark object is moved.
+   */
+  onObjectMoved(callback: (x: number, y: number) => void): void {
+    if (!this.canvas) return;
+    this.canvas.on('object:modified', (e) => {
+      const target = e.target;
+      if (target && this.watermarkObjects.includes(target)) {
+        callback(target.left ?? 0, target.top ?? 0);
+      }
+    });
+  }
+
   async applyWatermark(config: WatermarkConfig): Promise<void> {
     if (!this.canvas) return;
 

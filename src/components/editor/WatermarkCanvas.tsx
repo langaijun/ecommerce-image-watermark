@@ -55,6 +55,21 @@ export function WatermarkCanvas() {
       .catch(console.error);
   }, [selectedImage]);
 
+  // Enable drag-to-position on watermark objects
+  useEffect(() => {
+    const engine = engineRef.current;
+    if (!engine) return;
+
+    engine.setDraggable(!showOriginal);
+    engine.onObjectMoved((x, y) => {
+      useWatermarkStore.getState().updatePosition({
+        mode: 'custom',
+        customX: x,
+        customY: y,
+      });
+    });
+  }, [showOriginal]);
+
   // Apply or remove watermark based on showOriginal toggle
   useEffect(() => {
     const engine = engineRef.current;
