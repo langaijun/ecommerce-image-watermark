@@ -1,0 +1,175 @@
+{
+  "app": {
+    "title": "电商产品图批量水印工具 - 免费在线",
+    "description": "免费专业的电商产品图片批量水印工具，支持Amazon、淘宝、Shopify等多平台预设，浏览器本地处理保护隐私，批量导出ZIP下载。",
+    "privacyNote": "🔒 所有处理在浏览器本地完成，图片不会上传到任何服务器"
+  },
+  "header": {
+    "theme": "主题",
+    "language": "语言",
+    "templates": "模板",
+    "github": "GitHub"
+  },
+  "upload": {
+    "title": "上传图片",
+    "dragDrop": "拖拽图片到此处，或点击选择",
+    "formats": "支持 JPG、PNG、WebP、AVIF",
+    "maxFiles": "最多 {count} 张",
+    "removeAll": "清空全部",
+    "imageCount": "{count} 张图片",
+    "totalSize": "总大小：{size}",
+    "selectHint": "点击缩略图可预览水印效果"
+  },
+  "watermark": {
+    "title": "水印设置",
+    "types": {
+      "text": "文字水印",
+      "image": "图片水印",
+      "tiled": "平铺水印"
+    },
+    "text": {
+      "content": "水印文字",
+      "contentPlaceholder": "输入水印文字...",
+      "font": "字体",
+      "fontSize": "字号",
+      "color": "颜色",
+      "fontWeight": "字重",
+      "fontStyle": "样式",
+      "stroke": "描边",
+      "strokeEnabled": "启用描边",
+      "strokeColor": "描边颜色",
+      "strokeWidth": "描边宽度",
+      "shadow": "阴影",
+      "shadowEnabled": "启用阴影",
+      "shadowColor": "阴影颜色",
+      "shadowBlur": "模糊度",
+      "shadowOffset": "偏移量"
+    },
+    "image": {
+      "upload": "上传 Logo / 水印图片",
+      "width": "宽度",
+      "height": "高度",
+      "keepRatio": "保持比例"
+    },
+    "tiled": {
+      "content": "平铺文字",
+      "contentPlaceholder": "输入平铺文字...",
+      "font": "字体",
+      "fontSize": "字号",
+      "color": "颜色",
+      "spacingX": "水平间距",
+      "spacingY": "垂直间距",
+      "rotation": "旋转角度"
+    },
+    "position": {
+      "title": "位置",
+      "grid": "九宫格",
+      "custom": "自定义坐标",
+      "margin": "边距",
+      "offsetX": "X 偏移",
+      "offsetY": "Y 偏移"
+    },
+    "transform": {
+      "title": "变换",
+      "opacity": "透明度",
+      "rotation": "旋转",
+      "scale": "缩放"
+    }
+  },
+  "export": {
+    "title": "导出设置",
+    "platform": "电商平台",
+    "selectPlatform": "选择平台",
+    "noPlatform": "不使用平台预设",
+    "sizes": "输出尺寸",
+    "customSize": "自定义尺寸",
+    "width": "宽度",
+    "height": "高度",
+    "format": "输出格式",
+    "quality": "图片质量",
+    "process": "开始处理",
+    "processing": "处理中...",
+    "cancel": "取消",
+    "download": "下载 ZIP",
+    "downloading": "正在生成...",
+    "progress": "{current}/{total} ({percent}%)",
+    "result": {
+      "success": "成功处理 {count} 张",
+      "failed": "失败 {count} 张",
+      "sizeChange": "大小变化：{original} → {processed}",
+      "compression": "压缩率：{ratio}%"
+    }
+  },
+  "template": {
+    "title": "模板管理",
+    "save": "保存为模板",
+    "load": "加载模板",
+    "delete": "删除",
+    "name": "模板名称",
+    "namePlaceholder": "输入模板名称...",
+    "description": "模板描述",
+    "empty": "暂无保存的模板",
+    "confirmDelete": "确定删除模板 \"{name}\" 吗？",
+    "saved": "模板已保存"
+  },
+  "platforms": {
+    "amazon": {
+      "name": "Amazon",
+      "description": "亚马逊产品图片规范",
+      "watermarkWarning": "⚠️ Amazon主图禁止水印，可能导致listing被下架"
+    },
+    "taobao": {
+      "name": "淘宝/天猫",
+      "description": "淘宝天猫商品图片规范"
+    },
+    "pinduoduo": {
+      "name": "拼多多",
+      "description": "拼多多商品图片规范"
+    },
+    "jd": {
+      "name": "京东",
+      "description": "京东商品图片规范",
+      "watermarkWarning": "⚠️ 京东主图禁止水印"
+    },
+    "shopify": {
+      "name": "Shopify",
+      "description": "Shopify 独立站图片规范"
+    },
+    "ebay": {
+      "name": "eBay",
+      "description": "eBay 产品图片规范"
+    },
+    "etsy": {
+      "name": "Etsy",
+      "description": "Etsy 手工/创意商品图片规范"
+    },
+    "googleShopping": {
+      "name": "Google Shopping",
+      "description": "Google 购物广告图片规范",
+      "watermarkWarning": "⚠️ Google Shopping 禁止水印"
+    }
+  },
+  "preview": {
+    "title": "实时预览",
+    "noImage": "请上传图片后预览水印效果",
+    "zoom": "缩放",
+    "reset": "重置视图"
+  },
+  "common": {
+    "reset": "重置",
+    "apply": "应用",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "close": "关闭",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "warning": "警告",
+    "original": "原图尺寸"
+  },
+  "seo": {
+    "title": "免费在线批量图片水印工具 - 电商产品图专用（本地处理）",
+    "description": "免费专业的电商产品图片批量水印工具，支持Amazon、淘宝、Shopify、拼多多、京东等多平台预设，100%浏览器本地处理，隐私安全，批量ZIP下载。"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "app": {
+    "title": "Free Batch Image Watermark Tool - E-commerce",
+    "description": "Free professional batch image watermarking tool for e-commerce. Supports Amazon, Shopify, eBay presets. 100% private browser-based processing.",
+    "privacyNote": "🔒 All processing happens locally in your browser. Images are never uploaded to any server."
+  },
+  "header": {
+    "theme": "Theme",
+    "language": "Language",
+    "templates": "Templates",
+    "github": "GitHub"
+  },
+  "upload": {
+    "title": "Upload Images",
+    "dragDrop": "Drag & drop images here, or click to select",
+    "formats": "Supports JPG, PNG, WebP, AVIF",
+    "maxFiles": "Max {count} files",
+    "removeAll": "Clear All",
+    "imageCount": "{count} images",
+    "totalSize": "Total size: {size}",
+    "selectHint": "Click a thumbnail to preview watermark effect"
+  },
+  "watermark": {
+    "title": "Watermark Settings",
+    "types": {
+      "text": "Text",
+      "image": "Image",
+      "tiled": "Tiled"
+    },
+    "text": {
+      "content": "Text",
+      "contentPlaceholder": "Enter watermark text...",
+      "font": "Font",
+      "fontSize": "Font Size",
+      "color": "Color",
+      "fontWeight": "Weight",
+      "fontStyle": "Style",
+      "stroke": "Stroke",
+      "strokeEnabled": "Enable Stroke",
+      "strokeColor": "Stroke Color",
+      "strokeWidth": "Stroke Width",
+      "shadow": "Shadow",
+      "shadowEnabled": "Enable Shadow",
+      "shadowColor": "Shadow Color",
+      "shadowBlur": "Blur",
+      "shadowOffset": "Offset"
+    },
+    "image": {
+      "upload": "Upload Logo / Watermark Image",
+      "width": "Width",
+      "height": "Height",
+      "keepRatio": "Keep Aspect Ratio"
+    },
+    "tiled": {
+      "content": "Tile Text",
+      "contentPlaceholder": "Enter tile text...",
+      "font": "Font",
+      "fontSize": "Font Size",
+      "color": "Color",
+      "spacingX": "Horizontal Spacing",
+      "spacingY": "Vertical Spacing",
+      "rotation": "Rotation"
+    },
+    "position": {
+      "title": "Position",
+      "grid": "Grid",
+      "custom": "Custom",
+      "margin": "Margin",
+      "offsetX": "X Offset",
+      "offsetY": "Y Offset"
+    },
+    "transform": {
+      "title": "Transform",
+      "opacity": "Opacity",
+      "rotation": "Rotation",
+      "scale": "Scale"
+    }
+  },
+  "export": {
+    "title": "Export Settings",
+    "platform": "Platform",
+    "selectPlatform": "Select Platform",
+    "noPlatform": "No Platform Preset",
+    "sizes": "Output Size",
+    "customSize": "Custom Size",
+    "width": "Width",
+    "height": "Height",
+    "format": "Format",
+    "quality": "Quality",
+    "process": "Start Processing",
+    "processing": "Processing...",
+    "cancel": "Cancel",
+    "download": "Download ZIP",
+    "downloading": "Generating...",
+    "progress": "{current}/{total} ({percent}%)",
+    "result": {
+      "success": "{count} images processed successfully",
+      "failed": "{count} images failed",
+      "sizeChange": "Size change: {original} → {processed}",
+      "compression": "Compression: {ratio}%"
+    }
+  },
+  "template": {
+    "title": "Templates",
+    "save": "Save as Template",
+    "load": "Load Template",
+    "delete": "Delete",
+    "name": "Template Name",
+    "namePlaceholder": "Enter template name...",
+    "description": "Description",
+    "empty": "No saved templates",
+    "confirmDelete": "Delete template \"{name}\"?",
+    "saved": "Template saved"
+  },
+  "platforms": {
+    "amazon": {
+      "name": "Amazon",
+      "description": "Amazon product image specifications",
+      "watermarkWarning": "⚠️ Amazon main images prohibit watermarks"
+    },
+    "taobao": {
+      "name": "Taobao / Tmall",
+      "description": "Taobao/Tmall product image specifications"
+    },
+    "pinduoduo": {
+      "name": "Pinduoduo",
+      "description": "Pinduoduo product image specifications"
+    },
+    "jd": {
+      "name": "JD.com",
+      "description": "JD.com product image specifications",
+      "watermarkWarning": "⚠️ JD.com main images prohibit watermarks"
+    },
+    "shopify": {
+      "name": "Shopify",
+      "description": "Shopify store image specifications"
+    },
+    "ebay": {
+      "name": "eBay",
+      "description": "eBay product image specifications"
+    },
+    "etsy": {
+      "name": "Etsy",
+      "description": "Etsy handmade/creative product specifications"
+    },
+    "googleShopping": {
+      "name": "Google Shopping",
+      "description": "Google Shopping ad image specifications",
+      "watermarkWarning": "⚠️ Google Shopping prohibits watermarks"
+    }
+  },
+  "preview": {
+    "title": "Live Preview",
+    "noImage": "Upload images to preview watermark effect",
+    "zoom": "Zoom",
+    "reset": "Reset View"
+  },
+  "common": {
+    "reset": "Reset",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "original": "Original Size"
+  },
+  "seo": {
+    "title": "Free Batch Image Watermark Tool for E-commerce - 100% Private",
+    "description": "Free professional batch image watermarking tool for e-commerce. Supports Amazon, Shopify, eBay, Taobao presets. 100% browser-based processing, privacy-first, batch ZIP download."
+  }
+}

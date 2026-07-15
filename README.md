@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Commerce Image Batch Watermark Tool / 电商产品图批量水印工具
+
+Free, privacy-first batch image watermarking tool for e-commerce sellers.
+
+免费在线电商产品图批量水印工具，支持 Amazon、淘宝、Shopify、拼多多、京东等主流电商平台预设。
+
+## Features / 功能特点
+
+- **Batch Processing**: Upload multiple images and add watermarks in one click
+- **3 Watermark Types**: Text, Image/Logo, Tiled (fullscreen repeating)
+- **E-commerce Presets**: Amazon, Shopify, Taobao, Pinduoduo, eBay, Etsy, JD, Google Shopping
+- **100% Private**: All processing happens in the browser - no uploads
+- **Batch Export**: Multiple sizes + ZIP download
+- **Templates**: Save and reuse watermark settings
+- **i18n**: Chinese / English with one-click switch
+- **Dark/Light Mode**: Theme switching
+
+## Tech Stack
+
+- Next.js 14 (App Router)
+- Fabric.js v6 (Canvas watermark engine)
+- Tailwind CSS + shadcn/ui
+- Zustand (state management)
+- next-intl (internationalization)
+- fflate (ZIP generation)
+- react-dropzone (file upload)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npx vercel --prod
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/[locale]/        # Pages with i18n routing
+├── components/          # UI components
+│   ├── upload/          # Image upload & gallery
+│   ├── editor/          # Fabric.js canvas preview
+│   ├── controls/        # Watermark settings panels
+│   ├── export/          # Export & platform presets
+│   └── common/          # Shared components
+├── lib/
+│   ├── canvas/          # Watermark engine core
+│   ├── processing/      # Batch processing pipeline
+│   ├── platforms/       # E-commerce platform presets
+│   ├── stores/          # Zustand state management
+│   ├── i18n/            # next-intl configuration
+│   └── types/           # TypeScript types
+└── middleware.ts        # i18n locale routing
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
