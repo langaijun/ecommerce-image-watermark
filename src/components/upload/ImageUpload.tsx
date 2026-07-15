@@ -7,6 +7,7 @@ import { Upload, X, ImageIcon } from 'lucide-react';
 import { useImageStore } from '@/lib/stores/imageStore';
 import { formatFileSize } from '@/lib/utils/fileUtils';
 import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_FILES } from '@/lib/constants/watermark';
+import { ThumbnailWatermark } from './ThumbnailWatermark';
 
 export function ImageUpload() {
   const t = useTranslations('upload');
@@ -91,6 +92,8 @@ export function ImageUpload() {
                   alt={img.name}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
+                {/* Watermark preview overlay */}
+                <ThumbnailWatermark width={120} height={120} />
                 {/* Info overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-end">
                   <div className="w-full p-1.5 bg-gradient-to-t from-black/70 to-transparent text-white text-[10px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 truncate font-medium">
