@@ -16,6 +16,7 @@ import {
   XCircle,
   CheckCircle2,
   AlertTriangle,
+  Sparkles,
 } from 'lucide-react';
 
 export function ExportPanel() {
@@ -92,30 +93,49 @@ export function ExportPanel() {
 
   return (
     <div className="space-y-4 overflow-y-auto h-full pr-1">
-      <label className="text-sm font-medium">{t('title')}</label>
+      <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center w-6 h-6 rounded-md bg-accent/60">
+          <Download className="h-3 w-3 text-accent-foreground" />
+        </div>
+        <label className="text-sm font-semibold">{t('title')}</label>
+      </div>
 
       {/* Platform selector */}
       <div>
-        <label className="text-xs text-muted-foreground mb-1.5 block">
+        <label className="text-xs text-muted-foreground mb-2 block font-medium">
           {t('platform')}
         </label>
-        <select
-          value={selectedPlatformId || ''}
-          onChange={(e) => setSelectedPlatform(e.target.value || null)}
-          className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
-        >
-          <option value="">{t('noPlatform')}</option>
+        <div className="grid grid-cols-2 gap-1.5">
+          <button
+            onClick={() => setSelectedPlatform(null)}
+            className={`px-2.5 py-2 rounded-lg text-xs font-medium transition-all duration-200 border ${
+              !selectedPlatformId
+                ? 'bg-primary/10 border-primary/30 text-primary'
+                : 'bg-background border-border/50 text-muted-foreground hover:border-primary/20 hover:text-foreground'
+            }`}
+          >
+            {t('noPlatform')}
+          </button>
           {platforms.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.icon} {p.name}
-            </option>
+            <button
+              key={p.id}
+              onClick={() => setSelectedPlatform(p.id)}
+              className={`px-2.5 py-2 rounded-lg text-xs font-medium transition-all duration-200 border flex items-center gap-1.5 ${
+                selectedPlatformId === p.id
+                  ? 'bg-primary/10 border-primary/30 text-primary'
+                  : 'bg-background border-border/50 text-muted-foreground hover:border-primary/20 hover:text-foreground'
+              }`}
+            >
+              <span>{p.icon}</span>
+              <span className="truncate">{p.name}</span>
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       {/* Watermark policy warning */}
       {selectedPlatform && !selectedPlatform.watermarkPolicy.allowed && (
-        <div className="flex items-start gap-2 text-xs bg-destructive/10 border border-destructive/20 rounded-md p-2 text-destructive">
+        <div className="flex items-start gap-2 text-xs bg-destructive/10 border border-destructive/20 rounded-lg p-2.5 text-destructive">
           <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
           <span>
             {selectedPlatform.watermarkPolicy.note}
@@ -125,20 +145,24 @@ export function ExportPanel() {
 
       {/* Size selector */}
       <div>
-        <label className="text-xs text-muted-foreground mb-1.5 block">
+        <label className="text-xs text-muted-foreground mb-2 block font-medium">
           {t('sizes')}
         </label>
         <div className="space-y-1">
           {availableSizes.map((size) => (
             <label
               key={size.id}
-              className="flex items-center gap-2 text-sm py-0.5 cursor-pointer"
+              className={`flex items-center gap-2.5 text-sm py-1 px-2 rounded-md cursor-pointer transition-colors ${
+                selectedSizeIds.includes(size.id)
+                  ? 'bg-primary/5 text-foreground'
+                  : 'hover:bg-muted/50'
+              }`}
             >
               <input
                 type="checkbox"
                 checked={selectedSizeIds.includes(size.id)}
                 onChange={() => toggleSize(size.id)}
-                className="rounded"
+                className="rounded accent-primary"
               />
               <span>
                 {size.label}
@@ -155,18 +179,18 @@ export function ExportPanel() {
 
       {/* Format */}
       <div>
-        <label className="text-xs text-muted-foreground mb-1.5 block">
+        <label className="text-xs text-muted-foreground mb-2 block font-medium">
           {t('format')}
         </label>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {(['image/jpeg', 'image/png', 'image/webp'] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFormat(f)}
-              className={`flex-1 py-1.5 text-xs rounded-md transition-colors ${
+              className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
                 format === f
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted hover:bg-muted/80'
+                  ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+                  : 'bg-muted/70 hover:bg-muted text-muted-foreground hover:text-foreground'
               }`}
             >
               {f === 'image/jpeg' ? 'JPEG' : f === 'image/png' ? 'PNG' : 'WebP'}
@@ -177,7 +201,7 @@ export function ExportPanel() {
 
       {/* Quality */}
       <div>
-        <label className="text-xs text-muted-foreground mb-1 block">
+        <label className="text-xs text-muted-foreground mb-1.5 block font-medium">
           {t('quality')}: {Math.round(quality * 100)}%
         </label>
         <input
@@ -191,19 +215,20 @@ export function ExportPanel() {
       </div>
 
       {/* Process button */}
-      <div className="border-t pt-3">
+      <div className="border-t border-border/60 pt-4">
         {status === 'idle' || status === 'done' || status === 'error' || status === 'cancelled' ? (
           <button
             onClick={handleProcess}
             disabled={images.length === 0}
-            className="w-full py-2.5 rounded-md bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold text-sm hover:shadow-lg hover:shadow-primary/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2"
           >
+            <Sparkles className="h-4 w-4" />
             {t('process')} ({images.length} images)
           </button>
         ) : status === 'processing' ? (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <Loader2 className="h-4 w-4 animate-spin" />
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
               <span>
                 {t('progress', {
                   current: progress.current,
@@ -214,9 +239,9 @@ export function ExportPanel() {
                 })}
               </span>
             </div>
-            <div className="w-full bg-muted rounded-full h-2">
+            <div className="w-full bg-muted/50 rounded-full h-2.5 overflow-hidden">
               <div
-                className="bg-primary h-2 rounded-full transition-all"
+                className="bg-gradient-to-r from-primary to-primary/80 h-full rounded-full transition-all duration-300 ease-out"
                 style={{
                   width: `${(progress.current / progress.total) * 100}%`,
                 }}
@@ -227,7 +252,7 @@ export function ExportPanel() {
             </p>
             <button
               onClick={cancel}
-              className="w-full py-2 rounded-md border text-sm text-destructive hover:bg-destructive/10 transition-colors"
+              className="w-full py-2 rounded-lg border border-destructive/30 text-sm text-destructive hover:bg-destructive/10 transition-colors font-medium"
             >
               {t('cancel')}
             </button>
@@ -236,22 +261,22 @@ export function ExportPanel() {
 
         {/* Results */}
         {status === 'done' && result && (
-          <div className="mt-3 space-y-2">
-            <div className="flex items-center gap-2 text-sm text-green-600">
+          <div className="mt-4 space-y-3">
+            <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
               <CheckCircle2 className="h-4 w-4" />
               <span>
                 {t('result.success', { count: result.success.length })}
               </span>
             </div>
             {result.failed.length > 0 && (
-              <div className="flex items-center gap-2 text-sm text-destructive">
+              <div className="flex items-center gap-2 text-sm text-destructive font-medium">
                 <XCircle className="h-4 w-4" />
                 <span>
                   {t('result.failed', { count: result.failed.length })}
                 </span>
               </div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground bg-muted/40 rounded-lg px-3 py-2">
               {t('result.sizeChange', {
                 original: formatFileSize(result.totalOriginalSize),
                 processed: formatFileSize(result.totalProcessedSize),
@@ -259,14 +284,14 @@ export function ExportPanel() {
             </p>
             <button
               onClick={handleDownload}
-              className="w-full py-2.5 rounded-md bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold text-sm hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 flex items-center justify-center gap-2"
             >
               <Download className="h-4 w-4" />
               {t('download')} ({formatFileSize(result.zipBlob?.size ?? 0)})
             </button>
             <button
               onClick={reset}
-              className="w-full py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="w-full py-2 text-xs text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
               {tc('reset')}
             </button>

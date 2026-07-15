@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslations } from '@/lib/i18n/routing';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, ImageIcon } from 'lucide-react';
 import { useImageStore } from '@/lib/stores/imageStore';
 import { formatFileSize } from '@/lib/utils/fileUtils';
 import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_FILES } from '@/lib/constants/watermark';
@@ -35,55 +35,65 @@ export function ImageUpload() {
       {/* Upload zone */}
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+        className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-300 overflow-hidden ${
           isDragActive
-            ? 'border-primary bg-primary/5'
-            : 'border-border hover:border-primary/50 hover:bg-accent/50'
+            ? 'border-primary bg-primary/10 scale-[1.02]'
+            : 'border-border/70 hover:border-primary/50 hover:bg-primary/[0.03]'
         }`}
       >
+        {/* Gradient overlay for visual interest */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-accent/[0.04] pointer-events-none" />
         <input {...getInputProps()} />
-        <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-        <p className="text-sm font-medium">{t('dragDrop')}</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          {t('formats')} · {t('maxFiles', { count: MAX_UPLOAD_FILES })}
-        </p>
+        <div className="relative">
+          <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${
+            isDragActive ? 'bg-primary/20' : 'bg-primary/10'
+          }`}>
+            <Upload className={`h-5 w-5 transition-colors ${
+              isDragActive ? 'text-primary' : 'text-primary/70'
+            }`} />
+          </div>
+          <p className="text-sm font-medium text-foreground">{t('dragDrop')}</p>
+          <p className="text-xs text-muted-foreground mt-1.5">
+            {t('formats')} · {t('maxFiles', { count: MAX_UPLOAD_FILES })}
+          </p>
+        </div>
       </div>
 
       {/* Image gallery */}
       {images.length > 0 && (
         <>
-          <div className="flex items-center justify-between mt-3 px-1">
-            <span className="text-sm text-muted-foreground">
+          <div className="flex items-center justify-between mt-4 px-1">
+            <span className="text-xs text-muted-foreground font-medium">
               {t('imageCount', { count: images.length })} ·{' '}
               {t('totalSize', { size: formatFileSize(getTotalSize()) })}
             </span>
             <button
               onClick={removeAll}
-              className="text-xs text-destructive hover:underline"
+              className="text-xs text-destructive/80 hover:text-destructive font-medium transition-colors"
             >
               {t('removeAll')}
             </button>
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2 overflow-y-auto flex-1">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 mt-3 overflow-y-auto flex-1 pr-0.5">
             {images.map((img) => (
               <div
                 key={img.id}
                 onClick={() => selectImage(img.id)}
-                className={`relative group aspect-square rounded-md overflow-hidden cursor-pointer border-2 transition-colors ${
+                className={`relative group aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
                   selectedId === img.id
-                    ? 'border-primary ring-1 ring-primary'
-                    : 'border-transparent hover:border-primary/30'
+                    ? 'border-primary ring-2 ring-primary/20 scale-[1.02]'
+                    : 'border-transparent hover:border-primary/30 hover:scale-[1.02]'
                 }`}
               >
                 <img
                   src={img.previewUrl}
                   alt={img.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 {/* Info overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-end">
-                  <div className="w-full p-1 bg-black/60 text-white text-[10px] opacity-0 group-hover:opacity-100 transition-opacity truncate">
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-end">
+                  <div className="w-full p-1.5 bg-gradient-to-t from-black/70 to-transparent text-white text-[10px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 truncate font-medium">
                     {img.width}×{img.height}
                   </div>
                 </div>
@@ -93,7 +103,7 @@ export function ImageUpload() {
                     e.stopPropagation();
                     removeImage(img.id);
                   }}
-                  className="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                  className="absolute top-1 right-1 h-5 w-5 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-destructive hover:scale-110"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -101,7 +111,8 @@ export function ImageUpload() {
             ))}
           </div>
 
-          <p className="text-xs text-muted-foreground mt-2 px-1">
+          <p className="text-[11px] text-muted-foreground mt-3 px-1 flex items-center gap-1.5">
+            <ImageIcon className="h-3 w-3" />
             {t('selectHint')}
           </p>
         </>
