@@ -25,7 +25,9 @@
     "types": {
       "text": "文字水印",
       "image": "图片水印",
-      "tiled": "平铺水印"
+      "tiled": "平铺水印",
+      "combo": "组合",
+      "comboHint": "组合模式将同时叠加文字水印和图片水印（Logo）"
     },
     "text": {
       "content": "水印文字",

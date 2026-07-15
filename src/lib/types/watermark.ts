@@ -1,6 +1,6 @@
 // Watermark type definitions
 
-export type WatermarkType = 'text' | 'image' | 'tiled';
+export type WatermarkType = 'text' | 'image' | 'tiled' | 'combo';
 
 export interface TextStrokeConfig {
   enabled: boolean;

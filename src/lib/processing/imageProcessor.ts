@@ -176,77 +176,85 @@ export async function processImage(
   });
   offscreenCanvas.add(fabricImg);
 
-  // 5. Add watermark with proper scaling
+  // 5. Add watermark(s) with proper scaling
   const scaleFactor = getExportScaleFactor(outputW, outputH);
-  let watermarkObj: import('fabric').FabricObject | null = null;
+  const canvasSize = { width: outputW, height: outputH };
 
-  try {
-    switch (watermarkConfig.type) {
-      case 'text':
-        watermarkObj = createExportTextWatermark(watermarkConfig.text, scaleFactor);
-        break;
-      case 'image': {
-        // For image watermark, scale proportionally to output
-        const imgConfig = watermarkConfig.image;
-        if (imgConfig.dataUrl) {
-          const wmImg = await FabricImage.fromURL(imgConfig.dataUrl);
-          if (wmImg.width && wmImg.height) {
-            const targetW = imgConfig.width * scaleFactor;
-            const targetH = imgConfig.height * scaleFactor;
-            const sx = targetW / wmImg.width;
-            const sy = targetH / wmImg.height;
-            const uniformScale = imgConfig.preserveAspectRatio ? Math.min(sx, sy) : sx;
-            wmImg.set({
-              scaleX: uniformScale,
-              scaleY: imgConfig.preserveAspectRatio ? uniformScale : sy,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              evented: false,
-            });
-            watermarkObj = wmImg;
+  /**
+   * Create, position, and add a single watermark object to the canvas.
+   */
+  async function addWatermark(type: 'text' | 'image' | 'tiled') {
+    let obj: import('fabric').FabricObject | null = null;
+
+    try {
+      switch (type) {
+        case 'text':
+          obj = createExportTextWatermark(watermarkConfig.text, scaleFactor);
+          break;
+        case 'image': {
+          const imgConfig = watermarkConfig.image;
+          if (imgConfig.dataUrl) {
+            const wmImg = await FabricImage.fromURL(imgConfig.dataUrl);
+            if (wmImg.width && wmImg.height) {
+              const targetW = imgConfig.width * scaleFactor;
+              const targetH = imgConfig.height * scaleFactor;
+              const sx = targetW / wmImg.width;
+              const sy = targetH / wmImg.height;
+              const uniformScale = imgConfig.preserveAspectRatio ? Math.min(sx, sy) : sx;
+              wmImg.set({
+                scaleX: uniformScale,
+                scaleY: imgConfig.preserveAspectRatio ? uniformScale : sy,
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                evented: false,
+              });
+              obj = wmImg;
+            }
           }
+          break;
         }
-        break;
+        case 'tiled':
+          obj = createExportTiledWatermark(watermarkConfig.tiled, scaleFactor, canvasSize);
+          break;
       }
-      case 'tiled':
-        watermarkObj = createExportTiledWatermark(
-          watermarkConfig.tiled,
-          scaleFactor,
-          { width: outputW, height: outputH }
-        );
-        break;
+    } catch (e) {
+      console.error(`${type} watermark creation failed:`, e);
     }
-  } catch (e) {
-    console.error('Watermark creation failed:', e);
-  }
 
-  if (watermarkObj) {
-    if (watermarkConfig.type === 'tiled') {
-      watermarkObj.set({ opacity: watermarkConfig.transform.opacity });
+    if (!obj) return;
+
+    if (type === 'tiled') {
+      obj.set({ opacity: watermarkConfig.transform.opacity });
     } else {
-      const objW = (watermarkObj.width ?? 0) * (watermarkObj.scaleX ?? 1);
-      const objH = (watermarkObj.height ?? 0) * (watermarkObj.scaleY ?? 1);
-      const pos = calculatePosition(
-        watermarkConfig.position,
-        { width: outputW, height: outputH },
-        { width: objW, height: objH }
-      );
-      watermarkObj.set({
+      const objW = (obj.width ?? 0) * (obj.scaleX ?? 1);
+      const objH = (obj.height ?? 0) * (obj.scaleY ?? 1);
+      const pos = calculatePosition(watermarkConfig.position, canvasSize, {
+        width: objW,
+        height: objH,
+      });
+      obj.set({
         left: pos.x,
         top: pos.y,
         opacity: watermarkConfig.transform.opacity,
         angle: watermarkConfig.transform.rotation,
       });
-
       if (watermarkConfig.transform.scale !== 1) {
-        watermarkObj.set({
-          scaleX: (watermarkObj.scaleX ?? 1) * watermarkConfig.transform.scale,
-          scaleY: (watermarkObj.scaleY ?? 1) * watermarkConfig.transform.scale,
+        obj.set({
+          scaleX: (obj.scaleX ?? 1) * watermarkConfig.transform.scale,
+          scaleY: (obj.scaleY ?? 1) * watermarkConfig.transform.scale,
         });
       }
     }
-    offscreenCanvas.add(watermarkObj);
+
+    offscreenCanvas.add(obj);
+  }
+
+  if (watermarkConfig.type === 'combo') {
+    await addWatermark('text');
+    await addWatermark('image');
+  } else {
+    await addWatermark(watermarkConfig.type);
   }
 
   // 6. Wait for render then export

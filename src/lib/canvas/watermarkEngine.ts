@@ -7,11 +7,10 @@ import { calculatePosition } from './positionUtils';
 
 /**
  * WatermarkEngine - manages Fabric.js Canvas lifecycle for preview.
- * Handles adding, updating, and removing watermarks on a preview canvas.
  */
 export class WatermarkEngine {
   private canvas: Canvas | null = null;
-  private watermarkObject: FabricObject | null = null;
+  private watermarkObjects: FabricObject[] = [];
   private originalImageSize: ImageDimensions = { width: 0, height: 0 };
   private previewScale: number = 1;
 
@@ -43,7 +42,6 @@ export class WatermarkEngine {
 
     this.originalImageSize = { width: img.width, height: img.height };
 
-    // Scale to fit canvas (preview only)
     const scaleX = canvasWidth / img.width;
     const scaleY = canvasHeight / img.height;
     this.previewScale = Math.min(scaleX, scaleY);
@@ -63,31 +61,24 @@ export class WatermarkEngine {
     return this.originalImageSize;
   }
 
-  async applyWatermark(config: WatermarkConfig): Promise<void> {
-    if (!this.canvas) return;
-
-    // Remove old watermark
-    if (this.watermarkObject) {
-      this.canvas.remove(this.watermarkObject);
-      this.watermarkObject = null;
-    }
-
-    const canvasSize = {
-      width: this.canvas.width!,
-      height: this.canvas.height!,
-    };
-
-    // Create watermark based on type
-    let watermarkObj: FabricObject | null = null;
-    const scaleFactor = this.previewScale;
+  /**
+   * Create and position a single watermark object.
+   */
+  private async createWatermarkObject(
+    type: 'text' | 'image' | 'tiled',
+    config: WatermarkConfig,
+    canvasSize: { width: number; height: number },
+    scaleFactor: number
+  ): Promise<FabricObject | null> {
+    let obj: FabricObject | null = null;
 
     try {
-      switch (config.type) {
+      switch (type) {
         case 'text':
-          watermarkObj = createTextWatermark(config.text, scaleFactor);
+          obj = createTextWatermark(config.text, scaleFactor);
           break;
         case 'image':
-          watermarkObj = await createImageWatermark(
+          obj = await createImageWatermark(
             config.image,
             scaleFactor,
             canvasSize.width,
@@ -95,66 +86,89 @@ export class WatermarkEngine {
           );
           break;
         case 'tiled':
-          watermarkObj = await createTiledWatermark(
-            config.tiled,
-            scaleFactor,
-            canvasSize
-          );
+          obj = await createTiledWatermark(config.tiled, scaleFactor, canvasSize);
           break;
       }
     } catch (e) {
-      console.error('Failed to create watermark:', e);
-      return;
+      console.error(`Failed to create ${type} watermark:`, e);
+      return null;
     }
 
-    if (!watermarkObj) return;
+    if (!obj) return null;
 
-    // For tiled watermark (fullscreen rect), no position calculation needed
-    if (config.type === 'tiled') {
-      watermarkObj.set({
-        opacity: config.transform.opacity,
-      });
+    if (type === 'tiled') {
+      obj.set({ opacity: config.transform.opacity });
     } else {
-      // Calculate position
-      const objWidth =
-        (watermarkObj.width ?? 0) * (watermarkObj.scaleX ?? 1);
-      const objHeight =
-        (watermarkObj.height ?? 0) * (watermarkObj.scaleY ?? 1);
-
+      const objW = (obj.width ?? 0) * (obj.scaleX ?? 1);
+      const objH = (obj.height ?? 0) * (obj.scaleY ?? 1);
       const position = calculatePosition(config.position, canvasSize, {
-        width: objWidth,
-        height: objHeight,
+        width: objW,
+        height: objH,
       });
 
-      watermarkObj.set({
+      obj.set({
         left: position.x,
         top: position.y,
         opacity: config.transform.opacity,
         angle: config.transform.rotation,
       });
 
-      // Apply scale
       if (config.transform.scale !== 1) {
-        const currentSX = watermarkObj.scaleX ?? 1;
-        const currentSY = watermarkObj.scaleY ?? 1;
-        watermarkObj.set({
-          scaleX: currentSX * config.transform.scale,
-          scaleY: currentSY * config.transform.scale,
+        obj.set({
+          scaleX: (obj.scaleX ?? 1) * config.transform.scale,
+          scaleY: (obj.scaleY ?? 1) * config.transform.scale,
         });
       }
     }
 
-    this.canvas.add(watermarkObj);
-    this.watermarkObject = watermarkObj;
+    return obj;
+  }
+
+  async applyWatermark(config: WatermarkConfig): Promise<void> {
+    if (!this.canvas) return;
+
+    // Remove all old watermarks
+    for (const obj of this.watermarkObjects) {
+      this.canvas.remove(obj);
+    }
+    this.watermarkObjects = [];
+
+    const canvasSize = {
+      width: this.canvas.width!,
+      height: this.canvas.height!,
+    };
+    const scaleFactor = this.previewScale;
+
+    if (config.type === 'combo') {
+      // Combo mode: render both text and image watermarks
+      const textObj = await this.createWatermarkObject('text', config, canvasSize, scaleFactor);
+      if (textObj) {
+        this.canvas.add(textObj);
+        this.watermarkObjects.push(textObj);
+      }
+      const imgObj = await this.createWatermarkObject('image', config, canvasSize, scaleFactor);
+      if (imgObj) {
+        this.canvas.add(imgObj);
+        this.watermarkObjects.push(imgObj);
+      }
+    } else {
+      const obj = await this.createWatermarkObject(config.type, config, canvasSize, scaleFactor);
+      if (obj) {
+        this.canvas.add(obj);
+        this.watermarkObjects.push(obj);
+      }
+    }
+
     this.canvas.requestRenderAll();
   }
 
   removeWatermark(): void {
-    if (this.canvas && this.watermarkObject) {
-      this.canvas.remove(this.watermarkObject);
-      this.watermarkObject = null;
-      this.canvas.requestRenderAll();
+    if (!this.canvas) return;
+    for (const obj of this.watermarkObjects) {
+      this.canvas.remove(obj);
     }
+    this.watermarkObjects = [];
+    this.canvas.requestRenderAll();
   }
 
   getOriginalSize(): ImageDimensions {
@@ -168,6 +182,6 @@ export class WatermarkEngine {
   dispose(): void {
     this.canvas?.dispose();
     this.canvas = null;
-    this.watermarkObject = null;
+    this.watermarkObjects = [];
   }
 }

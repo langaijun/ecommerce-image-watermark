@@ -25,7 +25,9 @@
     "types": {
       "text": "Text",
       "image": "Image",
-      "tiled": "Tiled"
+      "tiled": "Tiled",
+      "combo": "Combo",
+      "comboHint": "Combo mode overlays both text and image watermarks simultaneously"
     },
     "text": {
       "content": "Text",

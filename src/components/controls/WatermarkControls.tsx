@@ -3,7 +3,7 @@
 import { useTranslations } from '@/lib/i18n/routing';
 import { useWatermarkStore } from '@/lib/stores/watermarkStore';
 import { FONT_GROUPS, WATERMARK_LIMITS } from '@/lib/constants/watermark';
-import { Type, Image, Grid3x3, MapPin, RotateCcw, Sun } from 'lucide-react';
+import { Type, Image, Grid3x3, MapPin, RotateCcw, Sun, Layers } from 'lucide-react';
 
 export function WatermarkControls() {
   const t = useTranslations('watermark');
@@ -44,6 +44,7 @@ export function WatermarkControls() {
             { key: 'text' as const, icon: Type, label: t('types.text') },
             { key: 'image' as const, icon: Image, label: t('types.image') },
             { key: 'tiled' as const, icon: Grid3x3, label: t('types.tiled') },
+            { key: 'combo' as const, icon: Layers, label: t('types.combo') },
           ]).map(({ key, icon: Icon, label }) => (
             <button
               key={key}
@@ -370,6 +371,47 @@ export function WatermarkControls() {
               </span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Combo mode: show text + image settings combined */}
+      {type === 'combo' && (
+        <div className="space-y-4">
+          <div className="p-3 rounded-lg bg-primary/5 border border-primary/15 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-medium text-primary">
+              <Type className="h-3 w-3" />
+              {t('types.text')}: {text.content || t('text.contentPlaceholder')}
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>{text.fontFamily}</span>
+              <span>·</span>
+              <span>{text.fontSize}px</span>
+              <span>·</span>
+              <span className="w-3 h-3 rounded" style={{ backgroundColor: text.color }} />
+              <span>{text.color}</span>
+            </div>
+          </div>
+          <div className="p-3 rounded-lg bg-primary/5 border border-primary/15 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-medium text-primary">
+              <Image className="h-3 w-3" />
+              {t('types.image')}: {image.fileName || '—'}
+            </div>
+            {!image.dataUrl && (
+              <label className="flex items-center justify-center gap-2 border-2 border-dashed rounded-lg p-3 cursor-pointer hover:border-primary/50 transition-colors text-xs text-muted-foreground">
+                <Image className="h-4 w-4" />
+                {t('image.upload')}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            💡 {t('types.comboHint')}
+          </p>
         </div>
       )}
 
