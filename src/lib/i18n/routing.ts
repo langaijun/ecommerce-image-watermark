@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useCallback, useMemo } from 'react';
 import zhMessages from '../../../messages/zh.json';
 import enMessages from '../../../messages/en.json';
 
@@ -40,18 +40,21 @@ export function useI18n() {
 
 export function useTranslations(namespace: string) {
   const { locale } = useI18n();
-  const msgs = messages[locale] as Record<string, unknown>;
 
-  return (key: string, params?: Record<string, string | number>): string => {
-    const fullKey = `${namespace}.${key}`;
-    let value = getNestedValue(msgs, fullKey);
-    if (params) {
-      Object.entries(params).forEach(([k, v]) => {
-        value = value.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
-      });
-    }
-    return value;
-  };
+  // Memoize the translator function - stable reference per locale+namespace
+  return useMemo(() => {
+    const msgs = messages[locale] as Record<string, unknown>;
+    return (key: string, params?: Record<string, string | number>): string => {
+      const fullKey = `${namespace}.${key}`;
+      let value = getNestedValue(msgs, fullKey);
+      if (params) {
+        Object.entries(params).forEach(([k, v]) => {
+          value = value.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+        });
+      }
+      return value;
+    };
+  }, [locale, namespace]);
 }
 
 export function createTranslator(locale: Locale) {

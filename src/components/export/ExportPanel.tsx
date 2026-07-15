@@ -22,7 +22,6 @@ export function ExportPanel() {
   const t = useTranslations('export');
   const tc = useTranslations('common');
   const images = useImageStore((s) => s.images);
-  const watermarkConfig = useWatermarkStore((s) => s.exportConfig());
   const {
     selectedPlatformId,
     setSelectedPlatform,
@@ -64,7 +63,7 @@ export function ExportPanel() {
     try {
       const processResult = await runBatchProcess({
         images: images.map((img) => img.file),
-        watermarkConfig,
+        watermarkConfig: useWatermarkStore.getState().exportConfig(),
         format,
         quality,
         selectedSizes: sizesToUse,
