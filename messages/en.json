@@ -155,7 +155,11 @@
     "title": "Live Preview",
     "noImage": "Upload images to preview watermark effect",
     "zoom": "Zoom",
-    "reset": "Reset View"
+    "reset": "Reset View",
+    "showOriginal": "Original",
+    "showWatermark": "Watermark",
+    "originalBadge": "Original",
+    "watermarkBadge": "Watermark"
   },
   "common": {
     "reset": "Reset",
