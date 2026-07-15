@@ -18,7 +18,8 @@
     "removeAll": "Clear All",
     "imageCount": "{count} images",
     "totalSize": "Total size: {size}",
-    "selectHint": "Click a thumbnail to preview watermark effect"
+    "selectHint": "Click a thumbnail to preview watermark effect",
+    "trySamples": "Try Sample Images"
   },
   "watermark": {
     "title": "Watermark Settings",
@@ -101,7 +102,16 @@
       "failed": "{count} images failed",
       "sizeChange": "Size change: {original} → {processed}",
       "compression": "Compression: {ratio}%"
-    }
+    },
+    "customPlatform": "Custom",
+    "addCustomPlatform": "Add Custom Platform",
+    "deleteCustomPlatform": "Delete custom platform",
+    "platformName": "Platform Name",
+    "platformNamePlaceholder": "Enter platform name...",
+    "cropStrategy": "Crop Strategy",
+    "watermarkAllowed": "Allow watermark",
+    "saveCustomPlatform": "Save",
+    "cancelAction": "Cancel"
   },
   "template": {
     "title": "Templates",

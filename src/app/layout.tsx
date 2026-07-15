@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import { ClientProviders } from '@/components/ClientProviders';
 import { StructuredData } from '@/components/StructuredData';
 import './globals.css';
@@ -62,6 +63,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background antialiased" suppressHydrationWarning>
         <StructuredData />
         <ClientProviders>{children}</ClientProviders>
+        <Analytics />
       </body>
     </html>
   );

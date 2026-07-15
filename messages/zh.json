@@ -18,7 +18,8 @@
     "removeAll": "清空全部",
     "imageCount": "{count} 张图片",
     "totalSize": "总大小：{size}",
-    "selectHint": "点击缩略图可预览水印效果"
+    "selectHint": "点击缩略图可预览水印效果",
+    "trySamples": "试试示例图片"
   },
   "watermark": {
     "title": "水印设置",
@@ -101,7 +102,16 @@
       "failed": "失败 {count} 张",
       "sizeChange": "大小变化：{original} → {processed}",
       "compression": "压缩率：{ratio}%"
-    }
+    },
+    "customPlatform": "自定义平台",
+    "addCustomPlatform": "添加自定义平台",
+    "deleteCustomPlatform": "删除自定义平台",
+    "platformName": "平台名称",
+    "platformNamePlaceholder": "输入平台名称...",
+    "cropStrategy": "裁剪策略",
+    "watermarkAllowed": "允许添加水印",
+    "saveCustomPlatform": "保存",
+    "cancelAction": "取消"
   },
   "template": {
     "title": "模板管理",

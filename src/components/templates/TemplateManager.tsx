@@ -5,6 +5,7 @@ import { useTranslations } from '@/lib/i18n/routing';
 import { useTemplateStore } from '@/lib/stores/templateStore';
 import { useWatermarkStore } from '@/lib/stores/watermarkStore';
 import { Bookmark, BookmarkPlus, Trash2, Download, X } from 'lucide-react';
+import { trackTemplateSaved } from '@/lib/utils/analytics';
 
 export function TemplateManager() {
   const t = useTranslations('template');
@@ -22,6 +23,7 @@ export function TemplateManager() {
     if (!saveName.trim()) return;
     const config = useWatermarkStore.getState().exportConfig();
     saveTemplate(saveName.trim(), config as any);
+    trackTemplateSaved();
     setSaveName('');
     setShowSaveDialog(false);
   };

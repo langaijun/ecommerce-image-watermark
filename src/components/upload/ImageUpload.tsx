@@ -6,7 +6,9 @@ import { useTranslations } from '@/lib/i18n/routing';
 import { Upload, X, ImageIcon } from 'lucide-react';
 import { useImageStore } from '@/lib/stores/imageStore';
 import { formatFileSize } from '@/lib/utils/fileUtils';
+import { generateSampleImages } from '@/lib/utils/sampleImages';
 import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_FILES } from '@/lib/constants/watermark';
+import { trackUpload } from '@/lib/utils/analytics';
 import { ThumbnailWatermark } from './ThumbnailWatermark';
 
 export function ImageUpload() {
@@ -20,6 +22,7 @@ export function ImageUpload() {
       const filesToAdd = acceptedFiles.slice(0, remaining);
       if (filesToAdd.length > 0) {
         await addImages(filesToAdd);
+        trackUpload(filesToAdd.length);
       }
     },
     [images.length, addImages]
@@ -59,6 +62,19 @@ export function ImageUpload() {
           </p>
         </div>
       </div>
+
+      {/* Try sample images */}
+      {images.length === 0 && (
+        <button
+          onClick={async () => {
+            const samples = await generateSampleImages();
+            await addImages(samples);
+          }}
+          className="w-full mt-2 py-2 rounded-lg border border-dashed border-primary/30 text-xs font-medium text-primary/70 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 flex items-center justify-center gap-1.5"
+        >
+          📸 {t('trySamples')}
+        </button>
+      )}
 
       {/* Image gallery */}
       {images.length > 0 && (

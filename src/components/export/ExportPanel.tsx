@@ -1,16 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from '@/lib/i18n/routing';
 import { useImageStore } from '@/lib/stores/imageStore';
 import { useWatermarkStore } from '@/lib/stores/watermarkStore';
 import { useExportStore } from '@/lib/stores/exportStore';
 import { useProcessStore } from '@/lib/stores/processStore';
+import { useCustomPlatformStore } from '@/lib/stores/customPlatformStore';
+import { CustomPlatformDialog } from './CustomPlatformDialog';
 import { platformRegistry } from '@/lib/platforms/platformRegistry';
 import { runBatchProcess } from '@/lib/processing/batchProcessor';
 import { formatFileSize } from '@/lib/utils/fileUtils';
 import { COMMON_SIZES } from '@/lib/constants/export';
 import { previewFilename, TEMPLATE_VARIABLES } from '@/lib/utils/filenameTemplate';
-import type { SizeSpec } from '@/lib/types';
+import { trackProcess, trackDownload, trackPlatformSelected } from '@/lib/utils/analytics';
+import type { SizeSpec, WatermarkPolicy } from '@/lib/types';
 import {
   Download,
   Loader2,
@@ -18,6 +22,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Sparkles,
+  Plus,
+  X,
 } from 'lucide-react';
 
 export function ExportPanel() {
@@ -39,10 +45,29 @@ export function ExportPanel() {
   const { status, progress, result, start, updateProgress, complete, fail, cancel, reset } =
     useProcessStore();
 
+  const [showCustomDialog, setShowCustomDialog] = useState(false);
+  const customPlatforms = useCustomPlatformStore((s) => s.platforms);
+  const removeCustomPlatform = useCustomPlatformStore((s) => s.removePlatform);
+
   const platforms = platformRegistry.getAll();
-  const selectedPlatform = selectedPlatformId
-    ? platformRegistry.getById(selectedPlatformId)
-    : null;
+
+  // Resolve selected platform from both built-in registry and custom platforms
+  const selectedPlatform: { sizes: SizeSpec[]; watermarkPolicy: WatermarkPolicy } | null =
+    selectedPlatformId
+      ? platformRegistry.getById(selectedPlatformId) ??
+        (() => {
+          const cp = customPlatforms.find((p) => p.id === selectedPlatformId);
+          return cp ? { sizes: cp.sizes, watermarkPolicy: cp.watermarkPolicy } : null;
+        })()
+      : null;
+
+  const handleDeleteCustomPlatform = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    removeCustomPlatform(id);
+    if (selectedPlatformId === id) {
+      setSelectedPlatform(null);
+    }
+  };
 
   const availableSizes: SizeSpec[] = selectedPlatform
     ? selectedPlatform.sizes
@@ -62,6 +87,7 @@ export function ExportPanel() {
     if (sizesToUse.length === 0) return;
 
     const totalTasks = images.length * sizesToUse.length;
+    trackProcess(totalTasks, selectedPlatformId ?? undefined);
     start(totalTasks);
 
     try {
@@ -87,6 +113,7 @@ export function ExportPanel() {
 
   const handleDownload = () => {
     if (!result?.zipBlob) return;
+    trackDownload(format);
     const url = URL.createObjectURL(result.zipBlob);
     const a = document.createElement('a');
     a.href = url;
@@ -123,7 +150,7 @@ export function ExportPanel() {
           {platforms.map((p) => (
             <button
               key={p.id}
-              onClick={() => setSelectedPlatform(p.id)}
+              onClick={() => { setSelectedPlatform(p.id); trackPlatformSelected(p.id); }}
               className={`px-2.5 py-2 rounded-lg text-xs font-medium transition-all duration-200 border flex items-center gap-1.5 ${
                 selectedPlatformId === p.id
                   ? 'bg-primary/10 border-primary/30 text-primary'
@@ -134,6 +161,37 @@ export function ExportPanel() {
               <span className="truncate">{p.name}</span>
             </button>
           ))}
+          {/* Custom platforms */}
+          {customPlatforms.map((cp) => (
+            <div key={cp.id} className="relative group">
+              <button
+                onClick={() => { setSelectedPlatform(cp.id); trackPlatformSelected(cp.id); }}
+                className={`w-full px-2.5 py-2 rounded-lg text-xs font-medium transition-all duration-200 border flex items-center gap-1.5 ${
+                  selectedPlatformId === cp.id
+                    ? 'bg-primary/10 border-primary/30 text-primary'
+                    : 'bg-background border-border/50 text-muted-foreground hover:border-primary/20 hover:text-foreground'
+                }`}
+              >
+                <span>⚙️</span>
+                <span className="truncate">{cp.name}</span>
+              </button>
+              <button
+                onClick={(e) => handleDeleteCustomPlatform(cp.id, e)}
+                className="absolute -top-1 -right-1 p-0.5 rounded-full bg-destructive text-white opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                title={t('deleteCustomPlatform')}
+              >
+                <X className="h-2.5 w-2.5" />
+              </button>
+            </div>
+          ))}
+          {/* Add custom platform button */}
+          <button
+            onClick={() => setShowCustomDialog(true)}
+            className="px-2.5 py-2 rounded-lg text-xs font-medium transition-all duration-200 border border-dashed border-border/70 text-muted-foreground hover:border-primary/40 hover:text-primary flex items-center justify-center gap-1"
+          >
+            <Plus className="h-3 w-3" />
+            <span className="truncate">{t('customPlatform')}</span>
+          </button>
         </div>
       </div>
 
@@ -347,6 +405,11 @@ export function ExportPanel() {
           </div>
         )}
       </div>
+
+      <CustomPlatformDialog
+        open={showCustomDialog}
+        onClose={() => setShowCustomDialog(false)}
+      />
     </div>
   );
 }
