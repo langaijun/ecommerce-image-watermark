@@ -55,6 +55,13 @@ export function WatermarkCanvas() {
       .catch(console.error);
   }, [selectedImage]);
 
+  // Listen for keyboard shortcut: Space toggles original/watermark view
+  useEffect(() => {
+    const handler = () => setShowOriginal((prev) => !prev);
+    window.addEventListener('shortcut:togglePreview', handler);
+    return () => window.removeEventListener('shortcut:togglePreview', handler);
+  }, []);
+
   // Enable drag-to-position on watermark objects
   useEffect(() => {
     const engine = engineRef.current;

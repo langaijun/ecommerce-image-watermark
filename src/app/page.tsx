@@ -8,6 +8,8 @@ import { WatermarkControls } from '@/components/controls/WatermarkControls';
 import { ExportPanel } from '@/components/export/ExportPanel';
 import { PrivacyBanner } from '@/components/common/PrivacyBanner';
 import { TemplateManager } from '@/components/templates/TemplateManager';
+import { ShortcutsHelp } from '@/components/common/ShortcutsHelp';
+import { useKeyboardShortcuts } from '@/lib/hooks/useKeyboardShortcuts';
 import { ImageIcon, Eye, Settings, Download } from 'lucide-react';
 
 const WatermarkCanvas = dynamic(
@@ -38,6 +40,7 @@ const TAB_CONFIG: { key: MobileTab; icon: typeof ImageIcon }[] = [
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<MobileTab>('upload');
+  const { showHelp, setShowHelp } = useKeyboardShortcuts();
   const tUpload = useTranslations('upload');
   const tPreview = useTranslations('preview');
   const tWatermark = useTranslations('watermark');
@@ -200,6 +203,9 @@ export default function HomePage() {
           </details>
         </div>
       </section>
+
+      {/* Keyboard shortcuts help dialog */}
+      <ShortcutsHelp show={showHelp} onClose={() => setShowHelp(false)} />
     </div>
   );
 }
